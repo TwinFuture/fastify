@@ -4,7 +4,7 @@ const FindMyWay = require('find-my-way')
 const Avvio = require('avvio')
 const http = require('http')
 const https = require('https')
-const querystring = require('querystring')
+const fq = require('fastquery')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
@@ -89,7 +89,7 @@ function build (options) {
   if (options.querystringParser && typeof options.querystringParser !== 'function') {
     throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
   }
-  const querystringParser = options.querystringParser || querystring.parse
+  const querystringParser = options.querystringParser || fq.parse
 
   let genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
 
@@ -298,7 +298,7 @@ function build (options) {
     req.log.info({ req }, 'incoming request')
 
     var queryPrefix = req.url.indexOf('?')
-    var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
+    var query = querystringParser(queryPrefix > -1 ? req.url : '') // You might wanna change this...
     var request = new context.Request(params, req, query, req.headers, req.log)
     var reply = new context.Reply(res, context, request, res.log)
 
